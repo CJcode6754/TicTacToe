@@ -1,7 +1,7 @@
 import useTicTacToe from "../hooks/useTicTacToe";
 
 function TicTacToe() {
-  const {board, calculateWinner, getStatusMessage, resetGame, handleClick} =  useTicTacToe()
+  const {board, getStatusMessage, resetGame, handleClick} =  useTicTacToe()
   return (
     <div className="game">
       <div className="status">
