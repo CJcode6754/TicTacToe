@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState } from 'react';
+
 const InitialBoard = () => Array(9).fill(null);
 
 const useTicTacToe = () => {
   const [board, setBoard] = useState(InitialBoard);
   const [isXNext, setIsXNext] = useState(true);
+  const [scores, setScores] = useState({ X: 0, O: 0, draws: 0 });
 
   const Winner_Patterns = [
     [0, 1, 2],
@@ -33,25 +35,36 @@ const useTicTacToe = () => {
   };
 
   const handleClick = (index) => {
-    // check winner
     const winner = calculateWinner(board);
 
     if (winner || board[index]) return;
 
     const newBoard = [...board];
-    newBoard[index] = isXNext ? "X" : "0";
+    newBoard[index] = isXNext ? "X" : "O";
     setBoard(newBoard);
     setIsXNext(!isXNext);
+
+    // Check if game ended and update scores
+    const newWinner = calculateWinner(newBoard);
+    if (newWinner) {
+      setScores(prev => ({
+        ...prev,
+        [newWinner]: prev[newWinner] + 1
+      }));
+    } else if (!newBoard.includes(null)) {
+      setScores(prev => ({
+        ...prev,
+        draws: prev.draws + 1
+      }));
+    }
   };
 
   const getStatusMessage = () => {
     const winner = calculateWinner(board);
 
-    if(winner) return `Player ${winner} wins!`;
-
-    if(!board.includes(null)) return 'Its a draw';
-
-    return `Player ${isXNext ? 'X' : '0'} turn`;
+    if (winner) return `Player ${winner} wins!`;
+    if (!board.includes(null)) return "It's a draw!";
+    return `Player ${isXNext ? 'X' : 'O'}'s turn`;
   };
 
   const resetGame = () => {
@@ -59,7 +72,22 @@ const useTicTacToe = () => {
     setIsXNext(true);
   };
 
-  return { board, handleClick, calculateWinner, getStatusMessage, resetGame };
+  const resetAll = () => {
+    setBoard(InitialBoard());
+    setIsXNext(true);
+    setScores({ X: 0, O: 0, draws: 0 });
+  };
+
+  return { 
+    board, 
+    handleClick, 
+    calculateWinner, 
+    getStatusMessage, 
+    resetGame, 
+    resetAll,
+    scores,
+    isXNext
+  };
 };
 
 export default useTicTacToe;
